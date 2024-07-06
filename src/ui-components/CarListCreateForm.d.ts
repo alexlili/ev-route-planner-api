@@ -26,14 +26,12 @@ export declare type CarListCreateFormInputValues = {
     portType?: string;
     brand?: string;
     range?: string;
-    userId?: string;
 };
 export declare type CarListCreateFormValidationValues = {
     name?: ValidationFunction<string>;
     portType?: ValidationFunction<string>;
     brand?: ValidationFunction<string>;
     range?: ValidationFunction<string>;
-    userId?: ValidationFunction<string>;
 };
 export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type CarListCreateFormOverridesProps = {
@@ -42,7 +40,6 @@ export declare type CarListCreateFormOverridesProps = {
     portType?: PrimitiveOverrideProps<TextFieldProps>;
     brand?: PrimitiveOverrideProps<TextFieldProps>;
     range?: PrimitiveOverrideProps<TextFieldProps>;
-    userId?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;
 export declare type CarListCreateFormProps = React.PropsWithChildren<{
     overrides?: CarListCreateFormOverridesProps | undefined | null;

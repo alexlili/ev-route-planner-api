@@ -27,20 +27,17 @@ export default function CarListCreateForm(props) {
     portType: "",
     brand: "",
     range: "",
-    userId: "",
   };
   const [name, setName] = React.useState(initialValues.name);
   const [portType, setPortType] = React.useState(initialValues.portType);
   const [brand, setBrand] = React.useState(initialValues.brand);
   const [range, setRange] = React.useState(initialValues.range);
-  const [userId, setUserId] = React.useState(initialValues.userId);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
     setName(initialValues.name);
     setPortType(initialValues.portType);
     setBrand(initialValues.brand);
     setRange(initialValues.range);
-    setUserId(initialValues.userId);
     setErrors({});
   };
   const validations = {
@@ -48,7 +45,6 @@ export default function CarListCreateForm(props) {
     portType: [],
     brand: [],
     range: [],
-    userId: [],
   };
   const runValidationTasks = async (
     fieldName,
@@ -80,7 +76,6 @@ export default function CarListCreateForm(props) {
           portType,
           brand,
           range,
-          userId,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -147,7 +142,6 @@ export default function CarListCreateForm(props) {
               portType,
               brand,
               range,
-              userId,
             };
             const result = onChange(modelFields);
             value = result?.name ?? value;
@@ -175,7 +169,6 @@ export default function CarListCreateForm(props) {
               portType: value,
               brand,
               range,
-              userId,
             };
             const result = onChange(modelFields);
             value = result?.portType ?? value;
@@ -203,7 +196,6 @@ export default function CarListCreateForm(props) {
               portType,
               brand: value,
               range,
-              userId,
             };
             const result = onChange(modelFields);
             value = result?.brand ?? value;
@@ -231,7 +223,6 @@ export default function CarListCreateForm(props) {
               portType,
               brand,
               range: value,
-              userId,
             };
             const result = onChange(modelFields);
             value = result?.range ?? value;
@@ -245,34 +236,6 @@ export default function CarListCreateForm(props) {
         errorMessage={errors.range?.errorMessage}
         hasError={errors.range?.hasError}
         {...getOverrideProps(overrides, "range")}
-      ></TextField>
-      <TextField
-        label="User id"
-        isRequired={false}
-        isReadOnly={false}
-        value={userId}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              name,
-              portType,
-              brand,
-              range,
-              userId: value,
-            };
-            const result = onChange(modelFields);
-            value = result?.userId ?? value;
-          }
-          if (errors.userId?.hasError) {
-            runValidationTasks("userId", value);
-          }
-          setUserId(value);
-        }}
-        onBlur={() => runValidationTasks("userId", userId)}
-        errorMessage={errors.userId?.errorMessage}
-        hasError={errors.userId?.hasError}
-        {...getOverrideProps(overrides, "userId")}
       ></TextField>
       <Flex
         justifyContent="space-between"
