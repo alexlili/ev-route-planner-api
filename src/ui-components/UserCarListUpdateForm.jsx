@@ -9,11 +9,13 @@ import * as React from "react";
 import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
 import { fetchByPath, getOverrideProps, validateField } from "./utils";
 import { generateClient } from "aws-amplify/api";
-import { createCarList } from "../graphql/mutations";
+import { getUserCarList } from "../graphql/queries";
+import { updateUserCarList } from "../graphql/mutations";
 const client = generateClient();
-export default function CarListCreateForm(props) {
+export default function UserCarListUpdateForm(props) {
   const {
-    clearOnSuccess = true,
+    id: idProp,
+    userCarList: userCarListModelProp,
     onSuccess,
     onError,
     onSubmit,
@@ -23,28 +25,48 @@ export default function CarListCreateForm(props) {
     ...rest
   } = props;
   const initialValues = {
-    name: "",
     portType: "",
     brand: "",
     range: "",
+    name: "",
   };
-  const [name, setName] = React.useState(initialValues.name);
   const [portType, setPortType] = React.useState(initialValues.portType);
   const [brand, setBrand] = React.useState(initialValues.brand);
   const [range, setRange] = React.useState(initialValues.range);
+  const [name, setName] = React.useState(initialValues.name);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
-    setName(initialValues.name);
-    setPortType(initialValues.portType);
-    setBrand(initialValues.brand);
-    setRange(initialValues.range);
+    const cleanValues = userCarListRecord
+      ? { ...initialValues, ...userCarListRecord }
+      : initialValues;
+    setPortType(cleanValues.portType);
+    setBrand(cleanValues.brand);
+    setRange(cleanValues.range);
+    setName(cleanValues.name);
     setErrors({});
   };
+  const [userCarListRecord, setUserCarListRecord] =
+    React.useState(userCarListModelProp);
+  React.useEffect(() => {
+    const queryData = async () => {
+      const record = idProp
+        ? (
+            await client.graphql({
+              query: getUserCarList.replaceAll("__typename", ""),
+              variables: { id: idProp },
+            })
+          )?.data?.getUserCarList
+        : userCarListModelProp;
+      setUserCarListRecord(record);
+    };
+    queryData();
+  }, [idProp, userCarListModelProp]);
+  React.useEffect(resetStateValues, [userCarListRecord]);
   const validations = {
-    name: [],
     portType: [],
     brand: [],
     range: [],
+    name: [],
   };
   const runValidationTasks = async (
     fieldName,
@@ -72,10 +94,10 @@ export default function CarListCreateForm(props) {
       onSubmit={async (event) => {
         event.preventDefault();
         let modelFields = {
-          name,
-          portType,
-          brand,
-          range,
+          portType: portType ?? null,
+          brand: brand ?? null,
+          range: range ?? null,
+          name: name ?? null,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -106,18 +128,16 @@ export default function CarListCreateForm(props) {
             }
           });
           await client.graphql({
-            query: createCarList.replaceAll("__typename", ""),
+            query: updateUserCarList.replaceAll("__typename", ""),
             variables: {
               input: {
+                id: userCarListRecord.id,
                 ...modelFields,
               },
             },
           });
           if (onSuccess) {
             onSuccess(modelFields);
-          }
-          if (clearOnSuccess) {
-            resetStateValues();
           }
         } catch (err) {
           if (onError) {
@@ -126,36 +146,9 @@ export default function CarListCreateForm(props) {
           }
         }
       }}
-      {...getOverrideProps(overrides, "CarListCreateForm")}
+      {...getOverrideProps(overrides, "UserCarListUpdateForm")}
       {...rest}
     >
-      <TextField
-        label="Name"
-        isRequired={false}
-        isReadOnly={false}
-        value={name}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              name: value,
-              portType,
-              brand,
-              range,
-            };
-            const result = onChange(modelFields);
-            value = result?.name ?? value;
-          }
-          if (errors.name?.hasError) {
-            runValidationTasks("name", value);
-          }
-          setName(value);
-        }}
-        onBlur={() => runValidationTasks("name", name)}
-        errorMessage={errors.name?.errorMessage}
-        hasError={errors.name?.hasError}
-        {...getOverrideProps(overrides, "name")}
-      ></TextField>
       <TextField
         label="Port type"
         isRequired={false}
@@ -165,10 +158,10 @@ export default function CarListCreateForm(props) {
           let { value } = e.target;
           if (onChange) {
             const modelFields = {
-              name,
               portType: value,
               brand,
               range,
+              name,
             };
             const result = onChange(modelFields);
             value = result?.portType ?? value;
@@ -192,10 +185,10 @@ export default function CarListCreateForm(props) {
           let { value } = e.target;
           if (onChange) {
             const modelFields = {
-              name,
               portType,
               brand: value,
               range,
+              name,
             };
             const result = onChange(modelFields);
             value = result?.brand ?? value;
@@ -219,10 +212,10 @@ export default function CarListCreateForm(props) {
           let { value } = e.target;
           if (onChange) {
             const modelFields = {
-              name,
               portType,
               brand,
               range: value,
+              name,
             };
             const result = onChange(modelFields);
             value = result?.range ?? value;
@@ -237,18 +230,46 @@ export default function CarListCreateForm(props) {
         hasError={errors.range?.hasError}
         {...getOverrideProps(overrides, "range")}
       ></TextField>
+      <TextField
+        label="Name"
+        isRequired={false}
+        isReadOnly={false}
+        value={name}
+        onChange={(e) => {
+          let { value } = e.target;
+          if (onChange) {
+            const modelFields = {
+              portType,
+              brand,
+              range,
+              name: value,
+            };
+            const result = onChange(modelFields);
+            value = result?.name ?? value;
+          }
+          if (errors.name?.hasError) {
+            runValidationTasks("name", value);
+          }
+          setName(value);
+        }}
+        onBlur={() => runValidationTasks("name", name)}
+        errorMessage={errors.name?.errorMessage}
+        hasError={errors.name?.hasError}
+        {...getOverrideProps(overrides, "name")}
+      ></TextField>
       <Flex
         justifyContent="space-between"
         {...getOverrideProps(overrides, "CTAFlex")}
       >
         <Button
-          children="Clear"
+          children="Reset"
           type="reset"
           onClick={(event) => {
             event.preventDefault();
             resetStateValues();
           }}
-          {...getOverrideProps(overrides, "ClearButton")}
+          isDisabled={!(idProp || userCarListModelProp)}
+          {...getOverrideProps(overrides, "ResetButton")}
         ></Button>
         <Flex
           gap="15px"
@@ -258,7 +279,10 @@ export default function CarListCreateForm(props) {
             children="Submit"
             type="submit"
             variation="primary"
-            isDisabled={Object.values(errors).some((e) => e?.hasError)}
+            isDisabled={
+              !(idProp || userCarListModelProp) ||
+              Object.values(errors).some((e) => e?.hasError)
+            }
             {...getOverrideProps(overrides, "SubmitButton")}
           ></Button>
         </Flex>

@@ -21,35 +21,34 @@ export declare type ValidationResponse = {
     errorMessage?: string;
 };
 export declare type ValidationFunction<T> = (value: T, validationResponse: ValidationResponse) => ValidationResponse | Promise<ValidationResponse>;
-export declare type CarListUpdateFormInputValues = {
-    name?: string;
+export declare type UserCarListCreateFormInputValues = {
     portType?: string;
     brand?: string;
     range?: string;
+    name?: string;
 };
-export declare type CarListUpdateFormValidationValues = {
-    name?: ValidationFunction<string>;
+export declare type UserCarListCreateFormValidationValues = {
     portType?: ValidationFunction<string>;
     brand?: ValidationFunction<string>;
     range?: ValidationFunction<string>;
+    name?: ValidationFunction<string>;
 };
 export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
-export declare type CarListUpdateFormOverridesProps = {
-    CarListUpdateFormGrid?: PrimitiveOverrideProps<GridProps>;
-    name?: PrimitiveOverrideProps<TextFieldProps>;
+export declare type UserCarListCreateFormOverridesProps = {
+    UserCarListCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
     portType?: PrimitiveOverrideProps<TextFieldProps>;
     brand?: PrimitiveOverrideProps<TextFieldProps>;
     range?: PrimitiveOverrideProps<TextFieldProps>;
+    name?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;
-export declare type CarListUpdateFormProps = React.PropsWithChildren<{
-    overrides?: CarListUpdateFormOverridesProps | undefined | null;
+export declare type UserCarListCreateFormProps = React.PropsWithChildren<{
+    overrides?: UserCarListCreateFormOverridesProps | undefined | null;
 } & {
-    id?: string;
-    carList?: any;
-    onSubmit?: (fields: CarListUpdateFormInputValues) => CarListUpdateFormInputValues;
-    onSuccess?: (fields: CarListUpdateFormInputValues) => void;
-    onError?: (fields: CarListUpdateFormInputValues, errorMessage: string) => void;
-    onChange?: (fields: CarListUpdateFormInputValues) => CarListUpdateFormInputValues;
-    onValidate?: CarListUpdateFormValidationValues;
+    clearOnSuccess?: boolean;
+    onSubmit?: (fields: UserCarListCreateFormInputValues) => UserCarListCreateFormInputValues;
+    onSuccess?: (fields: UserCarListCreateFormInputValues) => void;
+    onError?: (fields: UserCarListCreateFormInputValues, errorMessage: string) => void;
+    onChange?: (fields: UserCarListCreateFormInputValues) => UserCarListCreateFormInputValues;
+    onValidate?: UserCarListCreateFormValidationValues;
 } & React.CSSProperties>;
-export default function CarListUpdateForm(props: CarListUpdateFormProps): React.ReactElement;
+export default function UserCarListCreateForm(props: UserCarListCreateFormProps): React.ReactElement;
