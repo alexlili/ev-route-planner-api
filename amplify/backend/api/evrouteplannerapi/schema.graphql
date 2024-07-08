@@ -1,4 +1,4 @@
-type UserCarList @model @auth(rules: [{allow: public}, {allow: private}]) {
+type UserCarList @model @auth(rules: [{allow: public}, {allow: private, operations: [create]}]) {
   id: ID!
   portType: String
   brand: String
